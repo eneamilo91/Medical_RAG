@@ -1,0 +1,17 @@
+torch
+sentence_transformers
+transformers
+langchain
+faiss-cpu
+fastapi
+uvicorn
+pypdf
+PyPDF2
+jinja2
+ctransformers
+python-multipart
+aiofiles
+urllib3==1.26.18
+langchain-text-splitters
+numpy
+scikit-learn

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical FAISS RAG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+        .chat-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 30px;
+            background: rgba(51, 51, 51, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        .chat-heading {
+            text-align: center;
+            font-size: 2.8em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .chat-input {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            height: 120px;
+            background-color: #444;
+            border: 2px solid #555;
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1em;
+        }
+        .chat-input:focus {
+            background-color: #555;
+            border-color: #ffd700;
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        .chat-button {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .chat-button:hover {
+            background: linear-gradient(45deg, #20c997, #28a745);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        .chat-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .chat-response {
+            background: rgba(68, 68, 68, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 100px;
+            margin-top: 20px;
+            border-left: 4px solid #ffd700;
+        }
+        .accordion {
+            margin-top: 20px;
+            background-color: transparent;
+            border-radius: 10px;
+        }
+        .accordion-button {
+            color: white;
+            background: rgba(85, 85, 85, 0.8);
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .accordion-button:not(.collapsed) {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+        }
+        .accordion-body {
+            color: white;
+            background: rgba(68, 68, 68, 0.6);
+            border-radius: 0 0 8px 8px;
+        }
+        pre {
+            white-space: pre-wrap;
+            background: rgba(34, 34, 34, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #20c997;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffd700;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .status-indicator {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .status-ready {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+        .status-processing {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container chat-container">
+        <h1 class="chat-heading">Medical FAISS RAG QA App</h1>
+
+        <div class="accordion" id="appDescriptionAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="descriptionHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDescription" aria-expanded="false" aria-controls="collapseDescription">
+                        📋 About This Application
+                    </button>
+                </h2>
+                <div id="collapseDescription" class="accordion-collapse collapse" aria-labelledby="descriptionHeading" data-bs-parent="#appDescriptionAccordion">
+                    <div class="accordion-body">
+                        <strong>Medical RAG Application</strong> powered by:
+                        <ul>
+                            <li>🧠 <strong>BioMistral-7B</strong> - Fine-tuned medical domain language model</li>
+                            <li>🔍 <strong>FAISS Vector Database</strong> - Fast similarity search and clustering</li>
+                            <li>📚 <strong>PubMed-BERT Embeddings</strong> - Medical domain embeddings</li>
+                            <li>✂️ <strong>Semantic Chunking</strong> - Intelligent document segmentation</li>
+                            <li>🏠 <strong>Local Processing</strong> - Everything runs on your CPU locally</li>
+                        </ul>
+                        <p><em>This application provides accurate medical information retrieval without requiring internet connectivity or external APIs.</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div id="statusIndicator" class="status-indicator status-ready">
+                    🟢 Ready - Enter your medical query below
+                </div>
+                <textarea id="userInput" class="form-control chat-input" placeholder="Ask any medical question... (e.g., 'What is diabetes?', 'Explain symptoms of hypertension')"></textarea>
+                <button id="submitBtn" class="btn chat-button">
+                    <span id="buttonText">🔍 Ask Question</span>
+                    <span id="loadingSpinner" class="loading-spinner" style="display: none;"></span>
+                </button>
+                <div id="response" class="chat-response" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const submitBtn = document.getElementById('submitBtn');
+        const userInput = document.getElementById('userInput');
+        const responseDiv = document.getElementById('response');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const buttonText = document.getElementById('buttonText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        function setStatus(status, message) {
+            statusIndicator.className = `status-indicator status-${status}`;
+            statusIndicator.innerHTML = message;
+        }
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                submitBtn.disabled = true;
+                buttonText.style.display = 'none';
+                loadingSpinner.style.display = 'inline-block';
+                setStatus('processing', '⏳ Processing your query...');
+            } else {
+                submitBtn.disabled = false;
+                buttonText.style.display = 'inline';
+                loadingSpinner.style.display = 'none';
+                setStatus('ready', '🟢 Ready - Enter your medical query below');
+            }
+        }
+
+        submitBtn.addEventListener('click', async function() {
+            const query = userInput.value.trim();
+            if (!query) {
+                alert('Please enter a question first!');
+                return;
+            }
+
+            setLoading(true);
+            responseDiv.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('query', query);
+
+            try {
+                const response = await fetch('/get_response', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                responseDiv.innerHTML = `
+                    <div style="margin-bottom: 20px;">
+                        <h5 style="color: #ffd700; margin-bottom: 15px;">📋 Answer:</h5>
+                        <p style="font-size: 1.1em; line-height: 1.6;">${data.answer}</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h6 style="color: #20c997; margin-bottom: 10px;">📖 Source Context:</h6>
+                        <pre style="font-size: 0.9em; max-height: 200px; overflow-y: auto;">${data.source_document}</pre>
+                    </div>
+                    
+                    <div>
+                        <h6 style="color: #ff6b6b; margin-bottom: 10px;">📄 Document Reference:</h6>
+                        <pre style="font-size: 0.85em; color: #ccc;">${data.doc}</pre>
+                    </div>
+                `;
+                responseDiv.style.display = 'block';
+                setStatus('ready', '✅ Query completed successfully!');
+            } catch (error) {
+                console.error('Error:', error);
+                responseDiv.innerHTML = `
+                    <div style="color: #ff6b6b;">
+                        <h5>❌ Error</h5>
+                        <p>Failed to process your request: ${error.message}</p>
+                        <p><em>Please check that the server is running and the FAISS database is properly initialized.</em></p>
+                    </div>
+                `;
+                responseDiv.style.display = 'block';
+                setStatus('ready', '❌ Error occurred - Try again');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // Allow Enter key to submit
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
