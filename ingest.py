@@ -18,7 +18,7 @@ print("**************************")
 
 # Load PDF documents from data directory
 print("Loading PDF documents...")
-loader = DirectoryLoader('data/', glob="**/*.pdf", show_progress=True, loader_cls=PyPDFLoader)
+loader = DirectoryLoader('Data/', glob="**/*.pdf", show_progress=True, loader_cls=PyPDFLoader)
 documents = loader.load()
 
 print(f"Loaded {len(documents)} documents")
